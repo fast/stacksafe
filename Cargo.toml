@@ -1,0 +1,22 @@
+[workspace]
+members = ["stacksafe", "stacksafe-macro"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/fast/stacksafe"
+rust-version = "1.80.0"
+
+[workspace.dependencies]
+# workspace dependencies
+stacksafe = { version = "0.1.0", path = "stacksafe" }
+stacksafe-macro = { version = "=0.1.0", path = "stacksafe-macro" }
+
+# crates.io dependencies
+derive-visitor = "0.4"
+proc-macro-error2 = "2"
+quote = "1"
+serde = "1"
+stacker = "0.1"
+syn = "2"
