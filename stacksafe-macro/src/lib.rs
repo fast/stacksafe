@@ -97,7 +97,7 @@ pub fn stacksafe(args: TokenStream, item: TokenStream) -> TokenStream {
     let ret = match &item_fn.sig.output {
         // impl trait is not supported in closure return type, override with
         // default, which is inferring.
-        ReturnType::Type(_, typ) if matches!(**typ, Type::ImplTrait(_)) => ReturnType::Default,
+        ReturnType::Type(_, ty) if matches!(**ty, Type::ImplTrait(_)) => ReturnType::Default,
         _ => item_fn.sig.output.clone(),
     };
 
