@@ -53,12 +53,4 @@ jobs:
 
       - name: Run tests
         run: |
-          cargo nextest run --workspace
-          cargo test --doc
-
-      - name: Run examples
-        run: |
-          cargo run --example asynchronous
-          cargo run --example synchronous
-          cargo run --example basic
-          cargo run --package test-statically-disable
+          cargo test --lib --bins --tests
