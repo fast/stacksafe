@@ -20,7 +20,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 [features]
 # Provides stack-safe visitor pattern implementations for `StackSafe<T>`.
 derive-visitor = ["dep:derive-visitor"]
-# Enables stack-safe serialization and deserialization for `StackSafe<T>` wrappers.
+# Provides stack-safe serialization and deserialization for `StackSafe<T>`.
 serde = ["dep:serde"]
 
 [dependencies]

@@ -84,7 +84,7 @@
 //!
 //! StackSafe supports several optional features:
 //!
-//! - `serde`: Enables stack-safe serialization and deserialization for [`StackSafe<T>`] wrappers.
+//! - `serde`: Provides stack-safe serialization and deserialization for [`StackSafe<T>`].
 //! - `derive-visitor`: Provides stack-safe visitor pattern implementations for [`StackSafe<T>`].
 //!
 //! ## Platform Support
