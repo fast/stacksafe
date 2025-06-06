@@ -16,50 +16,6 @@ use syn::Type;
 use syn::parse_macro_input;
 use syn::parse_quote;
 
-/// Attribute macro for automatic stack overflow prevention in recursive functions.
-///
-/// This macro transforms functions to automatically check available stack space
-/// and allocate new stack segments when needed, preventing stack overflow in
-/// deeply recursive scenarios.
-///
-/// # Parameters
-///
-/// The macro accepts an optional `crate` parameter to specify the path to the
-/// stacksafe crate:
-///
-/// ```rust
-/// use stacksafe::stacksafe;
-///
-/// #[stacksafe(crate = stacksafe)]
-/// fn my_function() {
-///     // function body
-/// }
-/// ```
-///
-/// # Examples
-///
-/// ```rust
-/// use stacksafe::stacksafe;
-///
-/// #[stacksafe]
-/// fn factorial(n: u64) -> u64 {
-///     if n <= 1 { 1 } else { n * factorial(n - 1) }
-/// }
-///
-/// #[stacksafe]
-/// fn tree_depth<T>(node: &Option<Box<TreeNode<T>>>) -> usize {
-///     match node {
-///         None => 0,
-///         Some(n) => 1 + tree_depth(&n.left).max(tree_depth(&n.right)),
-///     }
-/// }
-/// ```
-///
-/// # Limitations
-///
-/// - Cannot be applied to `async` functions
-/// - Functions with `impl Trait` return types may need type annotations
-/// - Adds small runtime overhead for stack size checking
 #[proc_macro_attribute]
 #[proc_macro_error]
 pub fn stacksafe(args: TokenStream, item: TokenStream) -> TokenStream {

@@ -22,11 +22,6 @@ Transform recursive functions with the `#[stacksafe]` attribute:
 use stacksafe::stacksafe;
 
 #[stacksafe]
-fn factorial(n: u64) -> u64 {
-    if n <= 1 { 1 } else { n * factorial(n - 1) }
-}
-
-#[stacksafe]
 fn fibonacci(n: u64) -> u64 {
     match n {
         0 | 1 => n,
@@ -34,8 +29,8 @@ fn fibonacci(n: u64) -> u64 {
     }
 }
 
-// Safe for any input size
-println!("Large factorial: {}", factorial(10000));
+// Safe for deep recursion
+println!("Fibonacci of 30: {}", fibonacci(30));
 ```
 
 ## Recursive Data Structures

@@ -17,11 +17,6 @@
 //! use stacksafe::stacksafe;
 //!
 //! #[stacksafe]
-//! fn factorial(n: u64) -> u64 {
-//!     if n <= 1 { 1 } else { n * factorial(n - 1) }
-//! }
-//!
-//! #[stacksafe]
 //! fn fibonacci(n: u64) -> u64 {
 //!     match n {
 //!         0 | 1 => n,
@@ -29,8 +24,8 @@
 //!     }
 //! }
 //!
-//! // Safe for any input size
-//! println!("Large factorial: {}", factorial(10000));
+//! // Safe for deep recursion
+//! println!("Fibonacci of 30: {}", fibonacci(30));
 //! ```
 //!
 //! ## Recursive Data Structures
@@ -112,6 +107,49 @@ use std::ops::DerefMut;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
+/// Attribute macro for automatic stack overflow prevention in recursive functions.
+///
+/// This macro transforms functions to automatically check available stack space
+/// and allocate new stack segments when needed, preventing stack overflow in
+/// deeply recursive scenarios.
+///
+/// # Examples
+///
+/// ```rust
+/// use stacksafe::stacksafe;
+///
+/// #[stacksafe]
+/// fn factorial(n: u64) -> u64 {
+///     if n <= 1 { 1 } else { n * factorial(n - 1) }
+/// }
+/// ```
+///
+/// For recursive data structures:
+///
+/// ```rust
+/// use stacksafe::StackSafe;
+/// use stacksafe::stacksafe;
+///
+/// struct TreeNode<T> {
+///     value: T,
+///     left: Option<StackSafe<Box<TreeNode<T>>>>,
+///     right: Option<StackSafe<Box<TreeNode<T>>>>,
+/// }
+///
+/// #[stacksafe]
+/// fn tree_depth<T>(node: &Option<StackSafe<Box<TreeNode<T>>>>) -> usize {
+///     match node {
+///         None => 0,
+///         Some(n) => 1 + tree_depth(&n.left).max(tree_depth(&n.right)),
+///     }
+/// }
+/// ```
+///
+/// # Limitations
+///
+/// - Cannot be applied to `async` functions
+/// - Functions with `impl Trait` return types may need type annotations
+/// - Adds small runtime overhead for stack size checking
 pub use stacksafe_macro::stacksafe;
 
 static MINIMUM_STACK_SIZE: AtomicUsize = AtomicUsize::new(128 * 1024);
@@ -260,7 +298,6 @@ impl<T: Clone> Clone for StackSafe<T> {
 impl<T> Drop for StackSafe<T> {
     #[stacksafe(crate = crate)]
     fn drop(&mut self) {
-        #[allow(unsafe_code)]
         unsafe {
             std::mem::ManuallyDrop::drop(&mut self.0);
         }
