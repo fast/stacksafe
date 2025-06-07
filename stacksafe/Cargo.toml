@@ -3,7 +3,7 @@ name = "stacksafe"
 version = "0.1.0"
 
 categories = ["memory-management", "rust-patterns"]
-description = "Safe execution of deeply recursive functions with automatic stack management."
+description = "Prevent stack overflow in deeply recursive functions with automatic stack management."
 documentation = "https://docs.rs/stacksafe"
 keywords = ["recursion", "recursive", "stacker", "stack", "overflow"]
 readme = "../README.md"
