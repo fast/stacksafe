@@ -1,6 +1,5 @@
 [package]
 name = "stacksafe-macro"
-version = "0.1.0"
 
 categories = ["memory-management", "rust-patterns"]
 description = "Procedural macro implementation for the stacksafe crate."
@@ -12,6 +11,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+version.workspace = true
 
 [lib]
 proc-macro = true

@@ -7,11 +7,12 @@ edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/fast/stacksafe"
 rust-version = "1.80.0"
+version = "0.1.1"
 
 [workspace.dependencies]
 # workspace dependencies
-stacksafe = { version = "0.1.0", path = "stacksafe" }
-stacksafe-macro = { version = "=0.1.0", path = "stacksafe-macro" }
+stacksafe = { version = "0.1.1", path = "stacksafe" }
+stacksafe-macro = { version = "=0.1.1", path = "stacksafe-macro" }
 
 # crates.io dependencies
 derive-visitor = "0.4"

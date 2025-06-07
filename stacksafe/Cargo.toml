@@ -1,6 +1,5 @@
 [package]
 name = "stacksafe"
-version = "0.1.0"
 
 categories = ["memory-management", "rust-patterns"]
 description = "Prevent stack overflow in deeply recursive functions with automatic stack management."
@@ -12,6 +11,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+version.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
