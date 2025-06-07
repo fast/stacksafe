@@ -1,6 +1,7 @@
-//! StackSafe enables safe execution of deeply recursive algorithms through intelligent stack
-//! management, eliminating the need for manual stack size tuning or complex refactoring to
-//! iterative approaches.
+//! StackSafe prevents stack overflows in deeply recursive algorithms by providing intelligent stack
+//! management. No more crashes from recursive functions or data structures that exceed the default
+//! stack size - StackSafe automatically allocates additional stack space when needed, eliminating
+//! the need for manual stack size tuning or complex refactoring to iterative approaches.
 //!
 //! ## Quick Start
 //!
@@ -11,7 +12,8 @@
 //! stacksafe = "0.1"
 //! ```
 //!
-//! Transform recursive functions with the [`#[stacksafe]`](stacksafe) attribute:
+//! Transform recursive functions with the [`#[stacksafe]`](stacksafe) attribute to prevent stack
+//! overflow:
 //!
 //! ```rust
 //! use stacksafe::stacksafe;
@@ -24,13 +26,14 @@
 //!     }
 //! }
 //!
-//! // Safe for deep recursion
+//! // No stack overflow, even for deep recursion
 //! println!("Fibonacci of 30: {}", fibonacci(30));
 //! ```
 //!
 //! ## Recursive Data Structures
 //!
-//! Use [`StackSafe<T>`] to wrap recursive data structures:
+//! Use [`StackSafe<T>`] to wrap recursive data structures and prevent stack overflow during
+//! traversal:
 //!
 //! ```rust
 //! use stacksafe::StackSafe;
@@ -59,11 +62,11 @@
 //!
 //! - [`#[stacksafe]`](stacksafe) attribute monitors remaining stack space at function entry points.
 //!   When available space falls below a threshold (default: 128 KiB), it automatically allocates a
-//!   new stack segment (default: 2 MiB) and continues execution.
+//!   new stack segment (default: 2 MiB) and continues execution, preventing stack overflow.
 //!
 //! - [`StackSafe<T>`] is a wrapper type that transparently implement common traits like [`Clone`],
-//!   [`Debug`], and [`PartialEq`] with `#[stacksafe]` support, allowing you to use it in recursive
-//!   data structures without losing functionality.
+//!   [`Debug`], and [`PartialEq`] with `#[stacksafe]` support, ensuring stack-safe operations on
+//!   recursive data structures without risking overflow.
 //!
 //! ## Configuration
 //!

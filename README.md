@@ -5,7 +5,7 @@
 [![MSRV 1.80.0](https://img.shields.io/badge/MSRV-1.80.0-green?style=flat-square&logo=rust)](https://www.whatrustisit.com)
 [![CI Status](https://img.shields.io/github/actions/workflow/status/fast/stacksafe/ci.yml?style=flat-square&logo=github)](https://github.com/fast/stacksafe/actions)
 
-StackSafe enables safe execution of deeply recursive algorithms through intelligent stack management, eliminating the need for manual stack size tuning or complex refactoring to iterative approaches.
+StackSafe prevents stack overflows in deeply recursive algorithms by providing intelligent stack management. No more crashes from recursive functions or data structures that exceed the default stack size - StackSafe automatically allocates additional stack space when needed, eliminating the need for manual stack size tuning or complex refactoring to iterative approaches.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ Add StackSafe to your `Cargo.toml`:
 stacksafe = "0.1"
 ```
 
-Transform recursive functions with the `#[stacksafe]` attribute:
+Transform recursive functions with the `#[stacksafe]` attribute to prevent stack overflow:
 
 ```rust
 use stacksafe::stacksafe;
@@ -29,13 +29,13 @@ fn fibonacci(n: u64) -> u64 {
     }
 }
 
-// Safe for deep recursion
+// No stack overflow, even for deep recursion
 println!("Fibonacci of 30: {}", fibonacci(30));
 ```
 
 ## Recursive Data Structures
 
-Use `StackSafe<T>` to wrap recursive data structures:
+Use `StackSafe<T>` to wrap recursive data structures and prevent stack overflow during traversal:
 
 ```rust
 use stacksafe::{stacksafe, StackSafe};
