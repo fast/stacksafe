@@ -7,10 +7,17 @@ thread_local! {
     static PROTECTED: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
 }
 
-#[cfg(debug_assertions)]
 #[inline(always)]
 pub fn is_protected() -> bool {
-    PROTECTED.with(|p| p.get())
+    #[cfg(debug_assertions)]
+    {
+        PROTECTED.with(|p| p.get())
+    }
+
+    #[cfg(not(debug_assertions))]
+    {
+        true
+    }
 }
 
 #[inline(always)]

@@ -51,6 +51,9 @@ jobs:
       - name: Build
         run: cargo build --workspace --all-targets
 
+      - name: Build Release
+        run: cargo build --workspace --all-targets --release
+
       - name: Run tests
         run: |
           cargo test
