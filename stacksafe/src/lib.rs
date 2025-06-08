@@ -158,11 +158,12 @@ pub use stacksafe_macro::stacksafe;
 static MINIMUM_STACK_SIZE: AtomicUsize = AtomicUsize::new(128 * 1024);
 static STACK_ALLOC_SIZE: AtomicUsize = AtomicUsize::new(2 * 1024 * 1024);
 
-/// Configures the minimum stack space threshold for triggering stack allocation in bytes (default:
-/// 128 KiB).
+/// Configures the minimum stack space threshold for triggering stack allocation in bytes.
 ///
 /// When a function marked with [`#[stacksafe]`](stacksafe) is called and the remaining stack
 /// space is less than this threshold, a new stack segment will be allocated.
+/// 
+/// Defaults to 128 KiB.
 pub fn set_minimum_stack_size(bytes: usize) {
     MINIMUM_STACK_SIZE.store(bytes, Ordering::Relaxed);
 }
@@ -175,10 +176,12 @@ pub fn get_minimum_stack_size() -> usize {
     MINIMUM_STACK_SIZE.load(Ordering::Relaxed)
 }
 
-/// Configures the size of newly allocated stack segments in bytes (default: 2 MiB).
+/// Configures the size of newly allocated stack segments in bytes.
 ///
 /// When a function marked with [`#[stacksafe]`](stacksafe) needs more stack space,
 /// it allocates a new stack segment of this size.
+/// 
+/// Defaults to 2 MiB.
 pub fn set_stack_allocation_size(bytes: usize) {
     STACK_ALLOC_SIZE.store(bytes, Ordering::Relaxed);
 }
