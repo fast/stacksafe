@@ -251,6 +251,7 @@ impl<T> Deref for StackSafe<T> {
     ///     data.len() // Automatic deref to Vec<i32>
     /// }
     /// ```
+    #[track_caller]
     fn deref(&self) -> &Self::Target {
         debug_assert!(
             crate::internal::is_protected(),
@@ -280,6 +281,7 @@ impl<T> DerefMut for StackSafe<T> {
     ///     data.push(value); // Automatic deref to Vec<i32>
     /// }
     /// ```
+    #[track_caller]
     fn deref_mut(&mut self) -> &mut Self::Target {
         debug_assert!(
             crate::internal::is_protected(),
