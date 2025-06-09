@@ -162,7 +162,7 @@ static STACK_ALLOC_SIZE: AtomicUsize = AtomicUsize::new(2 * 1024 * 1024);
 ///
 /// When a function marked with [`#[stacksafe]`](stacksafe) is called and the remaining stack
 /// space is less than this threshold, a new stack segment will be allocated.
-/// 
+///
 /// Defaults to 128 KiB.
 pub fn set_minimum_stack_size(bytes: usize) {
     MINIMUM_STACK_SIZE.store(bytes, Ordering::Relaxed);
@@ -180,7 +180,7 @@ pub fn get_minimum_stack_size() -> usize {
 ///
 /// When a function marked with [`#[stacksafe]`](stacksafe) needs more stack space,
 /// it allocates a new stack segment of this size.
-/// 
+///
 /// Defaults to 2 MiB.
 pub fn set_stack_allocation_size(bytes: usize) {
     STACK_ALLOC_SIZE.store(bytes, Ordering::Relaxed);
