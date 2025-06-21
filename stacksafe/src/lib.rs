@@ -230,11 +230,14 @@ impl<T> StackSafe<T> {
     /// # Examples
     ///
     /// ```rust
+    /// # #[stacksafe::stacksafe]
+    /// # fn main() {
     /// use stacksafe::StackSafe;
     ///
     /// let wrapped = StackSafe::new(vec![1, 2, 3]);
     /// let inner = wrapped.into_inner();
     /// assert_eq!(inner, vec![1, 2, 3]);
+    /// # }
     /// ```
     pub fn into_inner(mut self) -> T {
         debug_assert!(
