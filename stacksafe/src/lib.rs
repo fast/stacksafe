@@ -226,7 +226,7 @@ impl<T> StackSafe<T> {
     /// In debug builds, panics if called outside of a stack-safe context.
     /// This helps ensure that recursive data structure access is properly
     /// protected against stack overflow.
-    /// 
+    ///
     /// # Examples
     ///
     /// ```rust
