@@ -218,6 +218,35 @@ impl<T> StackSafe<T> {
     pub fn new(value: T) -> Self {
         StackSafe(std::mem::ManuallyDrop::new(value))
     }
+
+    /// Consumes the [`StackSafe<T>`] wrapper and returns the inner value.
+    ///
+    /// # Panics
+    ///
+    /// In debug builds, panics if called outside of a stack-safe context.
+    /// This helps ensure that recursive data structure access is properly
+    /// protected against stack overflow.
+    /// 
+    /// # Examples
+    ///
+    /// ```rust
+    /// use stacksafe::StackSafe;
+    ///
+    /// let wrapped = StackSafe::new(vec![1, 2, 3]);
+    /// let inner = wrapped.into_inner();
+    /// assert_eq!(inner, vec![1, 2, 3]);
+    /// ```
+    pub fn into_inner(mut self) -> T {
+        debug_assert!(
+            crate::internal::is_protected(),
+            "`StackSafe` should only be accessed within a stack-safe context\n\
+            help: add `#[stacksafe::stacksafe]` to the function containing this access"
+        );
+
+        let value = unsafe { std::mem::ManuallyDrop::take(&mut self.0) };
+        std::mem::forget(self);
+        value
+    }
 }
 
 impl<T> From<T> for StackSafe<T> {
