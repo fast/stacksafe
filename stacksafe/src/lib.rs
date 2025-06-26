@@ -239,6 +239,7 @@ impl<T> StackSafe<T> {
     /// assert_eq!(inner, vec![1, 2, 3]);
     /// # }
     /// ```
+    #[track_caller]
     pub fn into_inner(mut self) -> T {
         debug_assert!(
             crate::internal::is_protected(),
