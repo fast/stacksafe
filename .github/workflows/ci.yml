@@ -1,3 +1,17 @@
+# Copyright 2025 FastLabs Developers
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 name: CI
 
 on:
@@ -5,6 +19,19 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+# Concurrency strategy:
+#   github.workflow: distinguish this workflow from others
+#   github.event_name: distinguish `push` event from `pull_request` event
+#   github.event.number: set to the number of the pull request if `pull_request` event
+#   github.run_id: otherwise, it's a `push` event, only cancel if we rerun the workflow
+#
+# Reference:
+#   https://docs.github.com/en/actions/using-jobs/using-concurrency
+#   https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.number || github.run_id }}
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -15,19 +42,27 @@ jobs:
     env:
       FORCE_COLOR: 1
     steps:
-      - uses: actions/checkout@v4
-      - uses: crate-ci/typos@master
+      - uses: actions/checkout@v5
       - uses: Swatinem/rust-cache@v2
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
-          components: rustfmt, clippy
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: typos-cli,taplo-cli,hawkeye
       - name: Cargo version
         run: cargo --version
       - name: Check format
         run: cargo fmt --all -- --check
       - name: Check clippy
         run: cargo clippy --all-targets --all-features -- --deny warnings
+      - name: Check typos
+        run: typos
+      - name: Check taplo
+        run: taplo check
+      - name: Run hawkeye
+        run: hawkeye check
 
   test:
     runs-on: ${{ matrix.os }}
@@ -35,25 +70,20 @@ jobs:
       fail-fast: false
       matrix:
         os: [ windows-latest, macos-latest, ubuntu-latest ]
-        rust: [ "1.80.0", "stable", "nightly" ]
+        rust: [ "1.85.0", "stable", "nightly" ]
     env:
       RUST_BACKTRACE: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: Swatinem/rust-cache@v2
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-
       - name: Cargo version
         run: cargo --version
-
       - name: Build
         run: cargo build --workspace --all-targets
-
       - name: Build Release
         run: cargo build --workspace --all-targets --release
-
       - name: Run tests
-        run: |
-          cargo test
+        run: cargo test -- --nocapture

@@ -1,3 +1,17 @@
+// Copyright 2025 FastLabs Developers
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 //! StackSafe prevents stack overflows in deeply recursive algorithms by providing intelligent stack
 //! management. No more crashes from recursive functions or data structures that exceed the default
 //! stack size - StackSafe automatically allocates additional stack space when needed, eliminating
@@ -9,7 +23,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! stacksafe = "0.1"
+//! stacksafe = "1"
 //! ```
 //!
 //! Transform recursive functions with the [`#[stacksafe]`](stacksafe) attribute to prevent stack
@@ -68,6 +82,13 @@
 //!   [`Debug`], and [`PartialEq`] with `#[stacksafe]` support, ensuring stack-safe operations on
 //!   recursive data structures without risking overflow.
 //!
+//! - In `debug` builds, accessing [`StackSafe<T>`] performs additional checks to ensure the current
+//!   function is properly annotated with `#[stacksafe]`, helping catch potential issues during
+//!   development.
+//!
+//! Read this [blog post](https://fast.github.io/blog/stacksafe-taming-recursion-in-rust-without-stack-overflow/)
+//! for an in-depth explanation of StackSafe's design and implementation.
+//!
 //! ## Configuration
 //!
 //! Customize stack management behavior:
@@ -101,7 +122,7 @@
 //! - And more...
 
 #![deny(missing_docs)]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod internal;
 
