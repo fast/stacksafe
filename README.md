@@ -88,7 +88,6 @@ set_stack_allocation_size(4 * 1024 * 1024);
 StackSafe supports several optional features:
 
 - `serde`: Provides stack-safe serialization and deserialization for `StackSafe<T>`.
-- `derive-visitor`: Provides stack-safe visitor pattern implementations for `StackSafe<T>`.
 
 ## Platform Support
 

@@ -109,7 +109,6 @@
 //! StackSafe supports several optional features:
 //!
 //! - `serde`: Provides stack-safe serialization and deserialization for [`StackSafe<T>`].
-//! - `derive-visitor`: Provides stack-safe visitor pattern implementations for [`StackSafe<T>`].
 //!
 //! ## Platform Support
 //!
@@ -432,21 +431,5 @@ impl<'a, T: serde::Deserialize<'a>> serde::Deserialize<'a> for StackSafe<T> {
     fn deserialize<D: serde::Deserializer<'a>>(deserializer: D) -> Result<Self, D::Error> {
         let value = T::deserialize(deserializer)?;
         Ok(StackSafe(std::mem::ManuallyDrop::new(value)))
-    }
-}
-
-#[cfg(feature = "derive-visitor")]
-impl<T: derive_visitor::Drive> derive_visitor::Drive for StackSafe<T> {
-    #[stacksafe(crate = crate)]
-    fn drive<V: derive_visitor::Visitor>(&self, visitor: &mut V) {
-        self.0.drive(visitor);
-    }
-}
-
-#[cfg(feature = "derive-visitor")]
-impl<T: derive_visitor::DriveMut> derive_visitor::DriveMut for StackSafe<T> {
-    #[stacksafe(crate = crate)]
-    fn drive_mut<V: derive_visitor::VisitorMut>(&mut self, visitor: &mut V) {
-        self.0.drive_mut(visitor);
     }
 }
