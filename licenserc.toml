@@ -12,25 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[workspace]
-members = ["stacksafe", "stacksafe-macro"]
-resolver = "2"
+headerPath = "Apache-2.0.txt"
 
-[workspace.package]
-edition = "2024"
-license = "Apache-2.0"
-repository = "https://github.com/fast/stacksafe"
-rust-version = "1.85.0"
-version = "1.0.0"
+includes = ['**/*.proto', '**/*.rs', '**/*.yml', '**/*.yaml', '**/*.toml']
 
-[workspace.dependencies]
-# workspace dependencies
-stacksafe = { version = "1.0.0", path = "stacksafe" }
-stacksafe-macro = { version = "=1.0.0", path = "stacksafe-macro" }
-
-# crates.io dependencies
-proc-macro-error2 = { version = "2" }
-quote = { version = "1" }
-serde = { version = "1" }
-stacker = { version = "0.1" }
-syn = { version = "2" }
+[properties]
+copyrightOwner = "FastLabs Developers"
+inceptionYear = 2025

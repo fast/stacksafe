@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/stacksafe.svg?style=flat-square&logo=rust)](https://crates.io/crates/stacksafe)
 [![Documentation](https://img.shields.io/docsrs/stacksafe?style=flat-square&logo=rust)](https://docs.rs/stacksafe/)
-[![MSRV 1.80.0](https://img.shields.io/badge/MSRV-1.80.0-green?style=flat-square&logo=rust)](https://www.whatrustisit.com)
+[![MSRV 1.85.0](https://img.shields.io/badge/MSRV-1.85.0-green?style=flat-square&logo=rust)](https://www.whatrustisit.com)
 [![CI Status](https://img.shields.io/github/actions/workflow/status/fast/stacksafe/ci.yml?style=flat-square&logo=github)](https://github.com/fast/stacksafe/actions)
 
 StackSafe prevents stack overflows in deeply recursive algorithms by providing intelligent stack management. No more crashes from recursive functions or data structures that exceed the default stack size - StackSafe automatically allocates additional stack space when needed, eliminating the need for manual stack size tuning or complex refactoring to iterative approaches.
@@ -13,7 +13,7 @@ Add StackSafe to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-stacksafe = "0.1"
+stacksafe = "1"
 ```
 
 Transform recursive functions with the `#[stacksafe]` attribute to prevent stack overflow:
@@ -64,8 +64,10 @@ fn tree_sum(tree: &BinaryTree) -> i32 {
 ## How It Works
 
 - `#[stacksafe]` attribute monitors remaining stack space at function entry points. When available space falls below a threshold (default: 128 KiB), it automatically allocates a new stack segment (default: 2 MiB) and continues execution.
-
 - `StackSafe<T>` is a wrapper type that transparently implement common traits like `Clone`, `Debug`, and `PartialEq` with `#[stacksafe]` support, allowing you to use it in recursive data structures without losing functionality.
+- In `debug` builds, accessing `StackSafe<T>` performs additional checks to ensure the current function is properly annotated with `#[stacksafe]`, helping catch potential issues during development.
+
+Read this [blog post](https://fast.github.io/blog/stacksafe-taming-recursion-in-rust-without-stack-overflow/) for an in-depth explanation of StackSafe's design and implementation.
 
 ## Configuration
 
@@ -86,7 +88,6 @@ set_stack_allocation_size(4 * 1024 * 1024);
 StackSafe supports several optional features:
 
 - `serde`: Provides stack-safe serialization and deserialization for `StackSafe<T>`.
-- `derive-visitor`: Provides stack-safe visitor pattern implementations for `StackSafe<T>`.
 
 ## Platform Support
 
