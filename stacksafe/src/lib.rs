@@ -58,8 +58,8 @@
 //!     Leaf(i32),
 //!     Node {
 //!         value: i32,
-//!         left: StackSafe<Box<BinaryTree>>,
-//!         right: StackSafe<Box<BinaryTree>>,
+//!         left: Box<StackSafe<BinaryTree>>,
+//!         right: Box<StackSafe<BinaryTree>>,
 //!     },
 //! }
 //!
@@ -155,12 +155,12 @@ use std::sync::atomic::Ordering;
 ///
 /// struct TreeNode<T> {
 ///     value: T,
-///     left: Option<StackSafe<Box<TreeNode<T>>>>,
-///     right: Option<StackSafe<Box<TreeNode<T>>>>,
+///     left: Option<Box<StackSafe<TreeNode<T>>>>,
+///     right: Option<Box<StackSafe<TreeNode<T>>>>,
 /// }
 ///
 /// #[stacksafe]
-/// fn tree_depth<T>(node: &Option<StackSafe<Box<TreeNode<T>>>>) -> usize {
+/// fn tree_depth<T>(node: &Option<Box<StackSafe<TreeNode<T>>>>) -> usize {
 ///     match node {
 ///         None => 0,
 ///         Some(n) => 1 + tree_depth(&n.left).max(tree_depth(&n.right)),

@@ -45,8 +45,8 @@ enum BinaryTree {
     Leaf(i32),
     Node {
         value: i32,
-        left: StackSafe<Box<BinaryTree>>,
-        right: StackSafe<Box<BinaryTree>>,
+        left: Box<StackSafe<BinaryTree>>,
+        right: Box<StackSafe<BinaryTree>>,
     },
 }
 
