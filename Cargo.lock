@@ -154,7 +154,7 @@ dependencies = [
 
 [[package]]
 name = "stacksafe"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "serde",
  "stacker",
@@ -163,7 +163,7 @@ dependencies = [
 
 [[package]]
 name = "stacksafe-macro"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "proc-macro-error2",
  "quote",
