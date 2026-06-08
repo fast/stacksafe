@@ -1,0 +1,7 @@
+error: #[stacksafe] can only be applied to functions
+  --> tests/ui/non_function_item.rs:17:1
+   |
+17 | #[stacksafe]
+   | ^^^^^^^^^^^^
+   |
+   = note: this error originates in the attribute macro `stacksafe` (in Nightly builds, run with -Z macro-backtrace for more info)
