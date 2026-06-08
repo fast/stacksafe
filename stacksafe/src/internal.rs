@@ -25,7 +25,7 @@ thread_local! {
 pub fn is_protected() -> bool {
     #[cfg(debug_assertions)]
     {
-        PROTECTED.with(|p| p.get())
+        PROTECTED.get()
     }
 
     #[cfg(not(debug_assertions))]
@@ -39,9 +39,9 @@ pub fn with_protected<R>(callback: impl FnOnce() -> R) -> impl FnOnce() -> R {
     move || {
         #[cfg(debug_assertions)]
         {
-            let old = PROTECTED.with(|p| p.replace(true));
+            let old = PROTECTED.replace(true);
             let ret = callback();
-            PROTECTED.with(|p| p.set(old));
+            PROTECTED.set(old);
             ret
         }
 
