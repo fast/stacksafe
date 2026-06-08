@@ -29,8 +29,8 @@ stacksafe = { version = "1.0.1", path = "stacksafe" }
 stacksafe-macro = { version = "=1.0.1", path = "stacksafe-macro" }
 
 # crates.io dependencies
-proc-macro-error2 = { version = "2" }
-quote = { version = "1" }
-serde = { version = "1" }
-stacker = { version = "0.1" }
-syn = { version = "2" }
+proc-macro2 = { version = "1.0.106" }
+quote = { version = "1.0.45" }
+serde = { version = "1.0.228" }
+stacker = { version = "0.1.24" }
+syn = { version = "2.0.117" }

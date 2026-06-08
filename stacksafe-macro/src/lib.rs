@@ -17,24 +17,32 @@
 //! This crate provides the `#[stacksafe]` attribute macro that transforms functions
 //! to use automatic stack growth, preventing stack overflow in deeply recursive scenarios.
 
-use proc_macro::TokenStream;
-use proc_macro_error2::abort;
-use proc_macro_error2::abort_call_site;
-use proc_macro_error2::proc_macro_error;
+use proc_macro2::Span;
+use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
 use syn::ItemFn;
 use syn::Path;
 use syn::ReturnType;
 use syn::Type;
-use syn::parse_macro_input;
 use syn::parse_quote;
+use syn::spanned::Spanned;
 
 #[proc_macro_attribute]
-#[proc_macro_error]
-pub fn stacksafe(args: TokenStream, item: TokenStream) -> TokenStream {
-    let mut crate_path: Option<Path> = None;
+pub fn stacksafe(
+    args: proc_macro::TokenStream,
+    item: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
+    let args = TokenStream::from(args);
+    let item = TokenStream::from(item);
+    match stacksafe_impl(args, item) {
+        Ok(tokens) => tokens.into(),
+        Err(err) => err.into_compile_error().into(),
+    }
+}
 
+fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStream> {
+    let mut crate_path: Option<Path> = None;
     let arg_parser = syn::meta::parser(|meta| {
         if meta.path.is_ident("crate") {
             crate_path = Some(meta.value()?.parse()?);
@@ -48,18 +56,23 @@ pub fn stacksafe(args: TokenStream, item: TokenStream) -> TokenStream {
             )))
         }
     });
-    parse_macro_input!(args with arg_parser);
+    syn::parse::Parser::parse2(arg_parser, args)?;
 
-    let item_fn: ItemFn = match syn::parse(item.clone()) {
+    let item_fn = match syn::parse2::<ItemFn>(item.clone()) {
         Ok(item) => item,
-        Err(_) => abort_call_site!("#[stacksafe] can only be applied to functions"),
+        Err(_) => {
+            return Err(syn::Error::new(
+                Span::call_site(),
+                "#[stacksafe] can only be applied to functions",
+            ));
+        }
     };
 
     if item_fn.sig.asyncness.is_some() {
-        abort!(
-            item_fn.sig.asyncness,
-            "#[stacksafe] does not support async functions"
-        );
+        return Err(syn::Error::new(
+            item_fn.sig.asyncness.span(),
+            "#[stacksafe] does not support async functions",
+        ));
     }
 
     let mut item_fn = item_fn;
@@ -82,6 +95,6 @@ pub fn stacksafe(args: TokenStream, item: TokenStream) -> TokenStream {
         }
     };
 
-    *item_fn.block = syn::parse(wrapped_block.into()).unwrap();
-    item_fn.into_token_stream().into()
+    *item_fn.block = syn::parse(wrapped_block.into())?;
+    Ok(item_fn.into_token_stream())
 }
