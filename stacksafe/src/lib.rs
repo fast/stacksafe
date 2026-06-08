@@ -369,9 +369,9 @@ impl<T: std::fmt::Debug> std::fmt::Debug for StackSafe<T> {
     #[stacksafe(crate = crate)]
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         if f.alternate() {
-            write!(f, "{:#?}", &*self.0)
+            write!(f, "{:#?}", *self.0)
         } else {
-            write!(f, "{:?}", &*self.0)
+            write!(f, "{:?}", *self.0)
         }
     }
 }
@@ -380,9 +380,9 @@ impl<T: std::fmt::Display> std::fmt::Display for StackSafe<T> {
     #[stacksafe(crate = crate)]
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         if f.alternate() {
-            write!(f, "{:#}", &*self.0)
+            write!(f, "{:#}", *self.0)
         } else {
-            write!(f, "{}", &*self.0)
+            write!(f, "{}", *self.0)
         }
     }
 }
