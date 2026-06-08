@@ -39,3 +39,6 @@ serde = ["dep:serde"]
 serde = { workspace = true, optional = true }
 stacker = { workspace = true }
 stacksafe-macro = { workspace = true }
+
+[dev-dependencies]
+trybuild = { workspace = true }
