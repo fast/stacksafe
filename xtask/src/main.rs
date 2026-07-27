@@ -53,11 +53,13 @@ enum SubCommand {
 struct CommandBuild {
     #[arg(long, help = "Assert that `Cargo.lock` will remain unchanged.")]
     locked: bool,
+    #[arg(long, help = "Build artifacts in release mode.")]
+    release: bool,
 }
 
 impl CommandBuild {
     fn run(self) {
-        run_command(make_build_cmd(self.locked));
+        run_command(make_build_cmd(self.locked, self.release));
     }
 }
 
@@ -117,7 +119,7 @@ fn run_command(mut cmd: StdCommand) {
     assert!(status.success(), "command failed: {status}");
 }
 
-fn make_build_cmd(locked: bool) -> StdCommand {
+fn make_build_cmd(locked: bool, release: bool) -> StdCommand {
     let mut cmd = find_command("cargo");
     cmd.args([
         "build",
@@ -130,6 +132,9 @@ fn make_build_cmd(locked: bool) -> StdCommand {
     ]);
     if locked {
         cmd.arg("--locked");
+    }
+    if release {
+        cmd.arg("--release");
     }
     cmd
 }

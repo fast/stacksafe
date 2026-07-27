@@ -79,6 +79,12 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust-version }}
+      - name: Build
+        run: cargo x build --locked
+        shell: bash
+      - name: Build release
+        run: cargo x build --locked --release
+        shell: bash
       - name: Run unit tests
         run: cargo x test --no-capture
         shell: bash
