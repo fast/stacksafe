@@ -17,11 +17,10 @@
 //! This crate provides the `#[stacksafe]` attribute macro that transforms functions
 //! to use automatic stack growth, preventing stack overflow in deeply recursive scenarios.
 
-use proc_macro2::Span;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use quote::quote;
-use syn::ItemFn;
+use syn::Item;
 use syn::Path;
 use syn::ReturnType;
 use syn::Type;
@@ -45,24 +44,25 @@ fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStre
     let mut crate_path: Option<Path> = None;
     let arg_parser = syn::meta::parser(|meta| {
         if meta.path.is_ident("crate") {
+            if crate_path.is_some() {
+                return Err(meta.error("duplicate attribute parameter `crate`"));
+            }
             crate_path = Some(meta.value()?.parse()?);
             Ok(())
         } else {
             Err(meta.error(format!(
                 "unknown attribute parameter `{}`",
-                meta.path
-                    .get_ident()
-                    .map_or("unknown".to_string(), |i| i.to_string())
+                meta.path.to_token_stream()
             )))
         }
     });
     syn::parse::Parser::parse2(arg_parser, args)?;
 
-    let item_fn = match syn::parse2::<ItemFn>(item.clone()) {
-        Ok(item) => item,
-        Err(_) => {
-            return Err(syn::Error::new(
-                Span::call_site(),
+    let mut item_fn = match syn::parse2::<Item>(item)? {
+        Item::Fn(item_fn) => item_fn,
+        item => {
+            return Err(syn::Error::new_spanned(
+                item,
                 "#[stacksafe] can only be applied to functions",
             ));
         }
@@ -75,12 +75,18 @@ fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStre
         ));
     }
 
-    let mut item_fn = item_fn;
+    if item_fn.sig.constness.is_some() {
+        return Err(syn::Error::new(
+            item_fn.sig.constness.span(),
+            "#[stacksafe] does not support const functions",
+        ));
+    }
+
     let ret = match &item_fn.sig.output {
         // impl trait is not supported in closure return type, override with
         // default, which is inferring.
-        ReturnType::Type(_, ty) if matches!(**ty, Type::ImplTrait(_)) => ReturnType::Default,
-        _ => item_fn.sig.output.clone(),
+        ReturnType::Type(_, ty) if matches!(**ty, Type::ImplTrait(_)) => None,
+        ret => Some(ret),
     };
 
     let stacksafe_crate = crate_path.unwrap_or_else(|| parse_quote!(::stacksafe));
@@ -95,6 +101,21 @@ fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStre
         }
     };
 
-    *item_fn.block = syn::parse(wrapped_block.into())?;
+    *item_fn.block = syn::parse2(wrapped_block)?;
     Ok(item_fn.into_token_stream())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn preserves_function_parse_errors() {
+        let error = stacksafe_impl(TokenStream::new(), quote!(fn malformed(_: ) {}))
+            .expect_err("malformed function should fail to parse");
+        let message = error.to_string();
+
+        assert!(message.contains("expected"));
+        assert!(!message.contains("can only be applied to functions"));
+    }
 }

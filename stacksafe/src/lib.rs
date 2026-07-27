@@ -171,6 +171,7 @@ use std::sync::atomic::Ordering;
 /// # Limitations
 ///
 /// - Cannot be applied to `async` functions
+/// - Cannot be applied to `const` functions
 /// - Functions with `impl Trait` return types may need type annotations
 /// - Adds small runtime overhead for stack size checking
 pub use stacksafe_macro::stacksafe;
