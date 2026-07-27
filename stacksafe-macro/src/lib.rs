@@ -83,8 +83,8 @@ fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStre
     }
 
     let ret = match &item_fn.sig.output {
-        // impl trait is not supported in closure return type, override with
-        // default, which is inferring.
+        // Closures cannot use `impl Trait` return types, so omit the return
+        // type and let the compiler infer it.
         ReturnType::Type(_, ty) if matches!(**ty, Type::ImplTrait(_)) => None,
         ret => Some(ret),
     };
