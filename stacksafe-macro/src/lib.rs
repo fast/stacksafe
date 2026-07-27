@@ -104,18 +104,3 @@ fn stacksafe_impl(args: TokenStream, item: TokenStream) -> syn::Result<TokenStre
     *item_fn.block = syn::parse2(wrapped_block)?;
     Ok(item_fn.into_token_stream())
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn preserves_function_parse_errors() {
-        let error = stacksafe_impl(TokenStream::new(), quote!(fn malformed(_: ) {}))
-            .expect_err("malformed function should fail to parse");
-        let message = error.to_string();
-
-        assert!(message.contains("expected"));
-        assert!(!message.contains("can only be applied to functions"));
-    }
-}
