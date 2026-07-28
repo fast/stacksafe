@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/stacksafe.svg?style=flat-square&logo=rust)](https://crates.io/crates/stacksafe)
 [![Documentation](https://img.shields.io/docsrs/stacksafe?style=flat-square&logo=rust)](https://docs.rs/stacksafe/)
-[![MSRV 1.85.0](https://img.shields.io/badge/MSRV-1.85.0-green?style=flat-square&logo=rust)](https://www.whatrustisit.com)
+[![MSRV 1.88.0](https://img.shields.io/badge/MSRV-1.88.0-green?style=flat-square&logo=rust)](https://www.whatrustisit.com)
 [![CI Status](https://img.shields.io/github/actions/workflow/status/fast/stacksafe/ci.yml?style=flat-square&logo=github)](https://github.com/fast/stacksafe/actions)
 
 StackSafe prevents stack overflows in deeply recursive algorithms by providing intelligent stack management. No more crashes from recursive functions or data structures that exceed the default stack size - StackSafe automatically allocates additional stack space when needed, eliminating the need for manual stack size tuning or complex refactoring to iterative approaches.

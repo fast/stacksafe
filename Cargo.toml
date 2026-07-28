@@ -20,7 +20,7 @@ resolver = "3"
 edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/fast/stacksafe"
-rust-version = "1.85.0"
+rust-version = "1.88.0"
 version = "1.0.3"
 
 [workspace.lints.rust]
@@ -40,9 +40,6 @@ stacksafe-macro = { version = "=1.0.3", path = "stacksafe-macro" }
 
 # crates.io dependencies
 proc-macro2 = { version = "1.0.106" }
-# Pin stacker's transitive dependency to preserve Rust 1.85 support.
-# See https://github.com/rust-lang/stacker/issues/139.
-psm = { version = "=0.1.28" }
 quote = { version = "1.0.45" }
 serde = { version = "1.0.228" }
 stacker = { version = "0.1.24" }

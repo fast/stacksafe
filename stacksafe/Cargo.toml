@@ -36,7 +36,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 serde = ["dep:serde"]
 
 [dependencies]
-psm = { workspace = true }
 serde = { workspace = true, optional = true }
 stacker = { workspace = true }
 stacksafe-macro = { workspace = true }
