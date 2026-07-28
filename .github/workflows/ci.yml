@@ -15,9 +15,9 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
+    branches: [ main ]
+  push:
     branches: [ main ]
 
 # Concurrency strategy:
@@ -33,57 +33,76 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.number || github.run_id }}
   cancel-in-progress: true
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   check:
+    name: Check
     runs-on: ubuntu-24.04
-    env:
-      FORCE_COLOR: 1
     steps:
-      - uses: actions/checkout@v5
-      - uses: Swatinem/rust-cache@v2
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions/checkout@v7
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@nightly
         with:
-          toolchain: nightly
           components: rustfmt,clippy
+      - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@v2
         with:
           tool: typos-cli,taplo-cli,hawkeye
-      - name: Cargo version
-        run: cargo --version
-      - name: Check format
-        run: cargo fmt --all -- --check
-      - name: Check clippy
-        run: cargo clippy --all-targets --all-features -- --deny warnings
-      - name: Check typos
-        run: typos
-      - name: Check taplo
-        run: taplo check
-      - name: Run hawkeye
-        run: hawkeye check
+      - run: cargo x lint
+
+  msrv:
+    name: Resolve MSRV
+    runs-on: ubuntu-24.04
+    outputs:
+      rust-versions: ${{ steps.metadata.outputs.rust-versions }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: metadata
+        run: |
+          msrv=$(yq '.workspace.package.rust-version' Cargo.toml)
+          echo "MSRV: $msrv"
+          echo "rust-versions=[\"${msrv}\", \"stable\"]" >> "$GITHUB_OUTPUT"
 
   test:
-    runs-on: ${{ matrix.os }}
+    name: Run tests
+    needs: msrv
     strategy:
-      fail-fast: false
       matrix:
-        os: [ windows-latest, macos-latest, ubuntu-latest ]
-        rust: [ "1.85.0", "stable", "nightly" ]
-    env:
-      RUST_BACKTRACE: 1
+        os: [ ubuntu-24.04, macos-14, windows-2022 ]
+        rust-version: ${{ fromJson(needs.msrv.outputs.rust-versions) }}
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: Swatinem/rust-cache@v2
-      - uses: dtolnay/rust-toolchain@master
+      - name: Delete rust-toolchain.toml
+        run: rm rust-toolchain.toml
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ matrix.rust }}
-      - name: Cargo version
-        run: cargo --version
+          toolchain: ${{ matrix.rust-version }}
       - name: Build
-        run: cargo build --workspace --all-targets
-      - name: Build Release
-        run: cargo build --workspace --all-targets --release
-      - name: Run tests
-        run: cargo test -- --nocapture
+        run: cargo x build --locked
+        shell: bash
+      - name: Build release
+        run: cargo x build --locked --release
+        shell: bash
+      - name: Run unit tests
+        run: cargo x test --no-capture
+        shell: bash
+
+  required:
+    name: Required
+    runs-on: ubuntu-24.04
+    if: ${{ always() }}
+    needs:
+      - check
+      - test
+    steps:
+      - name: Guardian
+        run: |
+          if [[ ! ( \
+                 "${{ needs.check.result }}" == "success" \
+              && "${{ needs.test.result }}" == "success" \
+              ) ]]; then
+            echo "Required jobs haven't been completed successfully."
+            exit -1
+          fi
